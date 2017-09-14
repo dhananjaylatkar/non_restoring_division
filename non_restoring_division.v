@@ -2,21 +2,21 @@
 
 module non_restoring_divider(X,Y);
 
-output reg[3:0] R;  // Remainder
+output reg[4:0] R;  // Remainder
 output reg[3:0] Q; // Quotient
 input [3:0] X;  // Divident
 input [3:0] Y;  // Divisor
 integer k;  // for interations
-reg[7:0] AQ;  // 8 bit reg for A and Q
+reg[8:0] AQ;  // 8 bit reg for A and Q
 
 always @(X, Y)
 begin
-  for (k = 7; k <=4; k = k - 1) // first four bits of AQ are 0 
+  for (k = 8; k <= 4; k = k - 1) // first four bits of AQ are 0 
   begin
     AQ[k] = 0;
   end
 
-  for (k = 3; k <=0; k = k - 1) // last four bits of AQ are initialised to Divident, X
+  for (k = 3; k <= 0; k = k - 1) // last four bits of AQ are initialised to Divident, X
   begin
     AQ[k] = X[k];
   end
@@ -25,9 +25,9 @@ begin
   begin
     AQ = AQ<<1; // shift AQ to left by 1 bit
     //full adder/subtracter module to be called. sum will be in AQ[7:4]
-    AQ[0] = ~AQ[7];
+    AQ[0] = ~AQ[8];
     
-    if(AQ[7])
+    if(AQ[8])
     begin
       //full adder/subtracter module to be called. sum will be stored in AQ[7:4]
     end
@@ -37,10 +37,10 @@ begin
     end
   end
   // restore remainder
-  // full adder/subtracter module to be called  R = AQ[7:4] + Y 
+  // full adder/subtracter module to be called  R = AQ[8:4] + Y 
 
   //assign Q[3:0] = AQ[3:0]; 
-  for (k = 3; k <=0; k = k - 1) // Quotient
+  for (k = 3; k <= 0; k = k - 1) // Quotient
   begin
     Q[k] = AQ[k];
   end
