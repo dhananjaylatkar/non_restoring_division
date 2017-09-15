@@ -1,4 +1,5 @@
-`include "non_restoring_divison.v"
+//`include "non_restoring_divison.v"
+`timescale 1ns / 1ps
 module non_restoring_divider_tb;
 //inputs
 reg[3:0] X;  
@@ -19,7 +20,7 @@ initial begin
   #200 X=4'b1110; Y=4'b1001; 
 end
 initial begin
-	$dumpfile("non_restoring_divison.vcd");
+	$dumpfile("non_restoring_division.vcd");
 	$dumpvars();
 end
 endmodule

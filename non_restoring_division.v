@@ -2,13 +2,15 @@
 
 module non_restoring_divider(X,Y);
 
-output reg[4:0] R;  // Remainder
+output wire [4:0] R;  // Remainder
 output reg[3:0] Q; // Quotient
 input [3:0] X;  // Dividend
 input [3:0] Y;  // Divisor
 integer k;  // for interations
 reg[8:0] AQ;  // 8 bit reg for A and Q
-
+wire [4:0] G;
+wire [4:0] F;
+integer c;
 always @(X, Y)
 begin
   for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
@@ -25,6 +27,21 @@ begin
   begin
     AQ = AQ<<1; // shift AQ to left by 1 bit
     //full adder/subtracter module to be called. sum will be in AQ[8:4], add/sub based on AQ[8]
+    if (AQ[8])
+    begin
+    for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
+      begin
+        AQ[k] = G[k];
+      end
+    end
+    else
+    begin
+    for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
+      begin
+        AQ[k] = F[k];
+      end
+    end
+
     AQ[0] = ~AQ[8];
   end
   // restore remainder
@@ -36,31 +53,36 @@ begin
     Q[k] = AQ[k];
   end
 end
+ripple_carry_adder_sub_5bit Add (.sum(G[4:0]), .carry(), .a(AQ[8:4]), .b(Y[3:0]), .M(1'b0));
+ripple_carry_adder_sub_5bit Sub (.sum(F[4:0]), .carry(), .a(AQ[8:4]), .b(Y[3:0]), .M(1'b1));
+ripple_carry_adder_sub_5bit Rem (.sum(R[4:0]), .carry(), .a(AQ[8:4]), .b(Y[3:0]), .M(1'b0));
+
 endmodule
 
-
-// 4 bit adder and  subtractor
-module ripple_carry_adder_sub_4bit (sum,carry,a,b,M);
+// 5 bit adder and  subtractor
+module ripple_carry_adder_sub_5bit (sum,carry,a,b,M);
 // M is selection bit; M=0 -> add; M=1 -> sub;
-output [3:0] sum;        
+output [4:0] sum;        
 output carry;
-input [3:0] a;
+input [4:0] a;
 input [3:0] b;
 input M;
 
-wire [2:0] c;
-wire [3: 0] b_xor_M;
+wire [3:0] c;
+wire [4: 0] b_xor_M;
 
 xor (b_xor_M[0], b[0], M);
 xor (b_xor_M[1], b[1], M);
 xor (b_xor_M[2], b[2], M);
 xor (b_xor_M[3], b[3], M);
+xor (b_xor_M[4], 1'b0, M);
 
 // 4 instances of individual full adder blocks
 FA FA0 (.s(sum[0]),.co(c[0]),.a(a[0]),.b(b_xor_M[0]),.ci(M));
 FA FA1 (.s(sum[1]),.co(c[1]),.a(a[1]),.b(b_xor_M[1]),.ci(c[0]));
 FA FA2 (.s(sum[2]),.co(c[2]),.a(a[2]),.b(b_xor_M[2]),.ci(c[1]));
-FA FA3 (.s(sum[3]),.co(carry),.a(a[3]),.b(b_xor_M[3]),.ci(c[2]));
+FA FA3 (.s(sum[3]),.co(c[3]),.a(a[3]),.b(b_xor_M[3]),.ci(c[2]));
+FA FA4 (.s(sum[4]),.co(carry),.a(a[4]),.b(b_xor_M[4]),.ci(c[3]));
 
 endmodule
 
