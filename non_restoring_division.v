@@ -19,17 +19,29 @@ begin
   for (k = 3; k >= 0; k = k - 1) // last four bits of AQ are initialised to Dividend, X
   begin
     AQ[k] = X[k];
+    R[k] = Y[k];   
   end
-
+  
+  R[4] = 0; //for add or sub 5 bit divisor needed
   for(k=0; k < 4; k = k + 1) // since give input is four bits, we need four cycles
   begin
+    M = ~AQ[8];
     AQ = AQ<<1; // shift AQ to left by 1 bit
     //full adder/subtracter module to be called. sum will be in AQ[8:4], add/sub based on AQ[8]
+    ripple_carry_adder_sub_5bit (AQ[8:4],carry,AQ[8:4],R[4:0],M);
     AQ[0] = ~AQ[8];
   end
   // restore remainder
   // full adder/subtracter module to be called  R = AQ[8:4] + Y 
-
+  if(AQ[8] == 1) //if remainder is negative, add divisor
+    M = ~AQ[8]
+    ripple_carry_adder_sub_5bit (R[4:0],carry,AQ[8:4],R[4:0],M);
+  else
+    for (k = 8; k >= 4; k = k - 1) // if remainder is positive
+      begin
+        R[k-4] = AQ[k];
+      end
+ 
   //assign Q[3:0] = AQ[3:0]; 
   for (k = 3; k >= 0; k = k - 1) // Quotient
   begin
