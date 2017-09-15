@@ -39,28 +39,30 @@ end
 endmodule
 
 
-// 4 bit adder and  subtractor
-module ripple_carry_adder_sub_4bit (sum,carry,a,b,M);
+// 5 bit adder and  subtractor
+module ripple_carry_adder_sub_5bit (sum,carry,a,b,M);
 // M is selection bit; M=0 -> add; M=1 -> sub;
-output [3:0] sum;        
+output [4:0] sum;        
 output carry;
-input [3:0] a;
-input [3:0] b;
+input [4:0] a;
+input [4:0] b;
 input M;
 
-wire [2:0] c;
-wire [3: 0] b_xor_M;
+wire [3:0] c;
+wire [4: 0] b_xor_M;
 
 xor (b_xor_M[0], b[0], M);
 xor (b_xor_M[1], b[1], M);
 xor (b_xor_M[2], b[2], M);
 xor (b_xor_M[3], b[3], M);
+xor (b_xor_M[4], b[4], M);
 
 // 4 instances of individual full adder blocks
 FA FA0 (.s(sum[0]),.co(c[0]),.a(a[0]),.b(b_xor_M[0]),.ci(M));
 FA FA1 (.s(sum[1]),.co(c[1]),.a(a[1]),.b(b_xor_M[1]),.ci(c[0]));
 FA FA2 (.s(sum[2]),.co(c[2]),.a(a[2]),.b(b_xor_M[2]),.ci(c[1]));
-FA FA3 (.s(sum[3]),.co(carry),.a(a[3]),.b(b_xor_M[3]),.ci(c[2]));
+FA FA3 (.s(sum[3]),.co(c[3]),.a(a[3]),.b(b_xor_M[3]),.ci(c[2]));
+FA FA3 (.s(sum[4]),.co(carry),.a(a[4]),.b(b_xor_M[4]),.ci(c[3]));
 
 endmodule
 
