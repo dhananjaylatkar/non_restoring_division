@@ -8,7 +8,7 @@ input [3:0] X;  // Dividend
 input [3:0] Y;  // Divisor
 integer k;  // for interations
 reg[8:0] AQ;  // 8 bit reg for A and Q
-  reg[4:0] DR; // 5 bit reg for Divisor
+reg[4:0] DR; // 5 bit reg for Divisor
 
 always @(X, Y)
 begin
