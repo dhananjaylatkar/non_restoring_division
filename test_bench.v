@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 //`include "non_restoring_divison.v"
-=======
-`include "non_restoring_divison.v"
->>>>>>> 89a89fe57a4d46367da0c3108b3a8bd33239879c
 //`timescale 1ns / 1ps
 module non_restoring_divider_tb;
 //inputs
@@ -24,13 +20,6 @@ initial begin
   #20 X=4'b0101; Y=4'b1010; 
   #20 X=4'b1001; Y=4'b1100; 
   #20 X=4'b1110; Y=4'b1001; 
-<<<<<<< HEAD
-end
-initial begin $monitor ($time,"remainder =%b,quotient=%b",R,Q);
-end
-endmodule
-=======
 end
 initial $monitor ($time,"remainder =%b,quotient=%b",R,Q);
 endmodule
->>>>>>> 89a89fe57a4d46367da0c3108b3a8bd33239879c
