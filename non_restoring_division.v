@@ -6,22 +6,21 @@ output wire [4:0] R;  // Remainder
 output reg [3:0] Q; // Quotient
 input [3:0] X;  // Dividend
 input [3:0] Y;  // Divisor
-integer k;  // for iterations
+integer i,j,k,l,m,n ;  // for iterations
 reg[8:0] AQ;  // 8 bit reg for A and Q
 wire [4:0] G;
 wire [4:0] F;
 integer c;
 
-
-always @(X, Y)
+always @(X,Y)
 begin
-  for (k = 8; k >= 4; k = k - 1) 
+  for (i = 8; i >= 4; i = i - 1) 
   begin
-      AQ[k] = 1'b0;
+      AQ[i] = 1'b0;
   end
-  for (k = 3; k >= 0; k = k - 1) // last four bits of AQ are initialised to Dividend, X
+  for (j = 3; j >= 0; j = j - 1) // last four bits of AQ are initialised to Dividend, X
   begin
-    AQ[k] = X[k];
+    AQ[j] = X[j];
   end
 
   for(k=0; k < 4; k = k + 1) // since give input is four bits, we need four cycles
@@ -31,17 +30,19 @@ begin
     //full adder/subtracter module to be called. sum will be in AQ[8:4], add/sub based on AQ[8]
     if (AQ[8])
     begin
-    for (k = 8; k >= 4; k = k - 1) 
+    for (l = 8; l >= 4; l = l - 1) 
       begin
-        AQ[k] = G[k];
+        AQ[l] = G[l];
       end
+      /* AQ[8:4] = AQ[8:4] + Y[3:0]; */ 
     end
     else
     begin
-    for (k = 8; k >= 4; k = k - 1)
+    for (m = 8; m >= 4; m = m - 1)
       begin
-        AQ[k] = F[k];
+        AQ[m] = F[m];
       end
+      /* AQ[8:4] = AQ[8:4] - Y[3:0]; */
     end
 
     //AQ[0] = ~AQ[8];
@@ -50,9 +51,9 @@ begin
   // full adder/subtracter module to be called  R = AQ[8:4] + Y 
 
   //assign Q[3:0] = AQ[3:0]; 
-  for (k = 3; k >= 0; k = k - 1) // Quotient
+  for (n = 3; n >= 0; n = n - 1) // Quotient
   begin
-    Q[k] = AQ[k];
+    Q[n] = AQ[n];
   end
 end
 ripple_carry_adder_sub_5bit Add (.sum(G[4:0]), .carry(), .a(AQ[8:4]), .b(Y[3:0]), .M(1'b0));
