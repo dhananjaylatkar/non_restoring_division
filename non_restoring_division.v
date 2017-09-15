@@ -1,23 +1,24 @@
 // To calculate X/Y
 
-module non_restoring_divider(X,Y);
+module non_restoring_divider(X,Y,R,Q);
 
 output wire [4:0] R;  // Remainder
-output reg[3:0] Q; // Quotient
+output reg [3:0] Q; // Quotient
 input [3:0] X;  // Dividend
 input [3:0] Y;  // Divisor
-integer k;  // for interations
+integer k;  // for iterations
 reg[8:0] AQ;  // 8 bit reg for A and Q
 wire [4:0] G;
 wire [4:0] F;
 integer c;
+
+
 always @(X, Y)
 begin
-  for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
+  for (k = 8; k >= 4; k = k - 1) 
   begin
-    AQ[k] = 0;
+      AQ[k] = 1'b0;
   end
-
   for (k = 3; k >= 0; k = k - 1) // last four bits of AQ are initialised to Dividend, X
   begin
     AQ[k] = X[k];
@@ -25,24 +26,25 @@ begin
 
   for(k=0; k < 4; k = k + 1) // since give input is four bits, we need four cycles
   begin
-    AQ = AQ<<1; // shift AQ to left by 1 bit
+    //AQ = AQ<<1; // shift AQ to left by 1 bit
+    AQ <= {AQ[7:0],~AQ[8]};
     //full adder/subtracter module to be called. sum will be in AQ[8:4], add/sub based on AQ[8]
     if (AQ[8])
     begin
-    for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
+    for (k = 8; k >= 4; k = k - 1) 
       begin
         AQ[k] = G[k];
       end
     end
     else
     begin
-    for (k = 8; k >= 4; k = k - 1) // first four bits of AQ are 0 
+    for (k = 8; k >= 4; k = k - 1)
       begin
         AQ[k] = F[k];
       end
     end
 
-    AQ[0] = ~AQ[8];
+    //AQ[0] = ~AQ[8];
   end
   // restore remainder
   // full adder/subtracter module to be called  R = AQ[8:4] + Y 
